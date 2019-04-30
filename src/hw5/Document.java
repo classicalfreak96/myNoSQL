@@ -15,7 +15,8 @@ public class Document {
 	 * a file into an object that can be manipulated.
 	 */
 	public static JsonObject parse(String json) {
-		return null;
+		JsonParser parser = new JsonParser();
+		return (JsonObject) parser.parse(json);
 	}
 	
 	/**
