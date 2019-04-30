@@ -1,6 +1,12 @@
 package hw5;
 
+import java.io.File;
+import java.io.IOException;
+
 public class DB {
+	
+	private String name;
+	private File dir;
 
 	/**
 	 * Creates a database object with the given name.
@@ -14,7 +20,13 @@ public class DB {
 	 * created.
 	 */
 	public DB(String name) {
-		
+		this.name = name;
+		this.dir = new File("testfiles/"+name);
+		if(!this.dir.exists()) {
+			// create DB in testfiles directory if the DB doesn't exist
+			this.dir.mkdirs();
+		}
+		// not sure what to do if the DB exists...
 	}
 	
 	/**
@@ -26,14 +38,18 @@ public class DB {
 	 * disk at this time. Those methods are in DBCollection.
 	 */
 	public DBCollection getCollection(String name) {
-		return null;
+		return new DBCollection(this, name);
 	}
 	
 	/**
 	 * Drops this database and all collections that it contains
 	 */
 	public void dropDatabase() {
-		
+		for(String f : this.dir.list()) {
+			File temp = new File(this.dir.getPath(),f);
+			temp.delete();
+		}
+		this.dir.delete();
 	}
 	
 	

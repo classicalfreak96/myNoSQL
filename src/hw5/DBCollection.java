@@ -1,18 +1,35 @@
 package hw5;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import com.google.gson.JsonObject;
 
 public class DBCollection {
-
+	
+	private String name;
+	private DB database;
+	private File jsonFile;
+	
 	/**
 	 * Constructs a collection for the given database
 	 * with the given name. If that collection doesn't exist
 	 * it will be created.
 	 */
 	public DBCollection(DB database, String name) {
-		
+		this.database = database;
+		this.name = name;
+		this.jsonFile = new File(name+".json");
+		if(!this.jsonFile.exists()) {
+			// if the collection does not exist, create a new json for it
+			try {
+				this.jsonFile.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**

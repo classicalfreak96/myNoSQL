@@ -23,5 +23,12 @@ class DBTester {
 		DB hw5 = new DB("hw5");
 		assertTrue(new File("testfiles/hw5").exists());
 	}
+	
+	@Test
+	void testDropDB() {
+		DB hw5 = new DB("hw5");
+		hw5.dropDatabase();
+		assertTrue(!new File("testfiles/hw5").exists());
+	}
 
 }
