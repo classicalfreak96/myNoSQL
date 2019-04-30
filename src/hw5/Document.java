@@ -26,6 +26,6 @@ public class Document {
 	 * when writing data to disk.
 	 */
 	public static String toJsonString(JsonObject json) {
-		return null;
+		return json.toString();
 	}
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import hw5.Document;
 
@@ -32,9 +33,9 @@ class DocumentTester {
 	public void testParseArrays() {
 		String json = "{ \"numbers\": [{\"type\": \"fax\", \"number\": \"123 456-7890\"}] }";
 		JsonObject results = Document.parse(json);
-		assertTrue(results.getAsJsonPrimitive("numbers").getAsJsonArray().get(0)
+		assertTrue(results.getAsJsonArray("numbers").get(0)
 				.getAsJsonObject().get("type").getAsString().equals("fax"));
-		assertTrue(results.getAsJsonPrimitive("numbers").getAsJsonArray().get(0)
+		assertTrue(results.getAsJsonArray("numbers").get(0)
 				.getAsJsonObject().get("number").getAsString().equals("123 456-7890"));
 	}
 	
@@ -42,10 +43,16 @@ class DocumentTester {
 	public void testParseDoc() {
 		String json = "{ \"numbers\": {\"type\": \"fax\", \"number\": \"123 456-7890\"} }";
 		JsonObject results = Document.parse(json);
-		assertTrue(results.getAsJsonPrimitive("numbers").getAsJsonObject()
-				.get("type").getAsString().equals("fax"));
-		assertTrue(results.getAsJsonPrimitive("numbers").getAsJsonObject()
-				.get("number").getAsString().equals("123 456-7890"));
+		assertTrue(results.getAsJsonObject("numbers").get("type").getAsString().equals("fax"));
+		assertTrue(results.getAsJsonObject("numbers").get("number").getAsString().equals("123 456-7890"));
+	}
+	
+	@Test
+	public void testToJsonString() {
+		JsonObject json = new JsonObject();
+		json.add("key", new JsonPrimitive("value"));
+		String results = Document.toJsonString(json);
+		assertTrue(results.equals("{\"key\":\"value\"}"));
 	}
 
 }
