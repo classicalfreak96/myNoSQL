@@ -48,8 +48,9 @@ public class DBCollection {
 	/**
 	 * Returns a cursor for all of the documents in
 	 * this collection.
+	 * @throws Exception 
 	 */
-	public DBCursor find() {
+	public DBCursor find() throws Exception {
 		return new DBCursor(this, null, null);
 	}
 	
@@ -58,9 +59,10 @@ public class DBCollection {
 	 * 
 	 * @param query relational select
 	 * @return
+	 * @throws Exception 
 	 */
-	public DBCursor find(JsonObject query) {
-		return null;
+	public DBCursor find(JsonObject query) throws Exception {
+		return new DBCursor(this, query, null);
 	}
 	
 	/**

@@ -22,7 +22,7 @@ class CursorTester {
 	 */
 
 	@Test
-	public void testFindAll() {
+	public void testFindAll() throws Exception {
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		DBCursor results = test.find();
