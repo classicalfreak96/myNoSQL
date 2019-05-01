@@ -119,11 +119,10 @@ public class DBCollection {
 			JsonObject doc = this.getDocument(i);
 			Set<Entry<String, JsonElement>> entrySet = doc.entrySet();
 			for (Map.Entry<String, JsonElement> entry: entrySet) {
-//			    System.out.println(entry.getKey());
 			    if(doc.get(entry.getKey()) != null) {
 			    	// then write to the file
 			    	// cannot remove and reinsert (otherwise doc gets new id)
-			    	this.replaceDocument(i, doc, update);
+			    	this.replaceDocument(i, doc, update.toString());
 			    	updatedOne = true;
 			    	break;
 			    }
@@ -142,7 +141,28 @@ public class DBCollection {
 	 * 				false if only the first matching document should be updated
 	 */
 	public void remove(JsonObject query, boolean multi) {
-		
+		boolean updatedOne = false;
+		System.out.println(this.count());
+		// removing is messing with the for loop, exits early
+		for(int i = 0; i < this.count(); i++) {
+			JsonObject doc = this.getDocument(i);
+			System.out.println(doc.toString() + " " + this.count());
+			Set<Entry<String, JsonElement>> entrySet = doc.entrySet();
+			for (Map.Entry<String, JsonElement> entry: entrySet) {
+			    if(doc.get(entry.getKey()) != null) {
+			    	System.out.println(i);
+			    	// then write to the file
+			    	// cannot remove and reinsert (otherwise doc gets new id)
+			    	this.replaceDocument(i, doc, "");
+			    	updatedOne = true;
+			    	break;
+			    }
+			}
+			if(updatedOne && !multi) {
+				System.out.println("yoyoyoyo");
+				break;
+			}
+		}
 	}
 	
 	/**
@@ -214,7 +234,10 @@ public class DBCollection {
 	
 	// helper method for update
 	// replaces doc w/ update
-	private void replaceDocument(int i , JsonObject doc, JsonObject update) {
+	// i is the document's index
+	// if removing document pass: (i, doc, "")
+	private void replaceDocument(int i , JsonObject doc, String update) {
+		// TODO: keep id on update
 		try {
 			int lineNum = 0;
 			int tabCount = 0;
@@ -232,23 +255,27 @@ public class DBCollection {
 				oldCollection  += line + "\n";
                 line = reader.readLine();
             }
-			System.out.println("DOC: " + doc.toString());
-			System.out.println("UPDATE: " + update.toString());
 			
-			String newCollection = oldCollection.replace(doc.toString(), update.toString());
+			String newCollection = oldCollection;
 			String[] lines = newCollection.split("\\r?\\n");
 			
+//			int index = update.equals("") ? lineNum-1 : lineNum;
 			int index = lineNum;
-			System.out.println(lines.length + " " + index);
 			while(index < lines.length && !lines[index].equals("\t")) {
 				lines[index] = "";
 				index++;
 			}
-			lines[lineNum] = update.toString();
+			if(index+1 < lines.length) {
+				if(lines[index+1].equals("\t")) {
+					lines[index+1] = "";
+				}
+			}
+			
+			lines[lineNum] = update;
 			List<String> linesList = new ArrayList<String>(Arrays.asList(lines));
 			linesList.removeIf(l -> l.equals(""));
 			newCollection = String.join("\n", linesList);
-			System.out.println(newCollection);
+			
 			
 			// replace selected doc w/ update
 			FileOutputStream outputStream = new FileOutputStream(this.jsonFile, false);
@@ -264,5 +291,4 @@ public class DBCollection {
 			e.printStackTrace();
 		}
 	}
-	
 }

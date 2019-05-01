@@ -27,6 +27,19 @@ class CollectionTester {
 		JsonObject json = new JsonObject();
 		json.add("key", new JsonPrimitive("value"));
 		test.insert(json);
+		
+		// used for testUpdate and testRemove
+		test = db.getCollection("test4");
+		test.insert(json);
+		
+		// used for testUpdateMulti
+		test = db.getCollection("test5");
+		test.drop();
+		test.insert(json, json);
+		
+		// used for testRemoveMulti
+//		test = db.getCollection("test6");
+//		test.insert(json, json);
 	}
 
 	/*
@@ -111,6 +124,51 @@ class CollectionTester {
 		JsonObject primitive = test.getDocument(0);
 		System.out.println(primitive.toString());
 		assertTrue(primitive.getAsJsonPrimitive("newkey").getAsFloat() == newVal);
+	}
+	
+	@Test
+	public void testUpdateMulti() {
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test5");
+		
+		JsonObject query = new JsonObject();
+		JsonObject update = new JsonObject();
+		query.add("key", new JsonPrimitive("value"));
+		int newVal = (int)(Math.random() * 10 + 1);
+		update.add("newkey", new JsonPrimitive(newVal));
+		
+		test.update(query, update, true);
+		
+		JsonObject primitive = test.getDocument(0);
+		assertTrue(primitive.getAsJsonPrimitive("newkey").getAsFloat() == newVal);
+		primitive = test.getDocument(1);
+		assertTrue(primitive.getAsJsonPrimitive("newkey").getAsFloat() == newVal);
+	}
+	
+	@Test
+	public void testRemove() {
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test4");
+		
+		// make sure correct # documents in file
+		assertTrue(test.count() == 1);
+		JsonObject query = new JsonObject();
+		query.add("key", new JsonPrimitive("value"));
+		test.remove(query, false);
+		assertTrue(test.count() == 0);
+	}
+	
+	@Test
+	public void testRemoveMulti() {
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test6");
+		
+		// make sure correct # documents in file
+		assertTrue(test.count() == 2);
+		JsonObject query = new JsonObject();
+		query.add("key", new JsonPrimitive("value"));
+		test.remove(query, true);
+		assertTrue(test.count() == 0);
 	}
 
 }
