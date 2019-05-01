@@ -3,9 +3,9 @@
 }
 	
 {
-	"embedded": {
-		"key2": "value2"
-	}
+	"embedded": { 	
+		"key2": "value2" 
+	} 
 }
 	
 {
