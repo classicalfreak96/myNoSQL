@@ -48,7 +48,7 @@ public class DBCollection {
 	 * this collection.
 	 */
 	public DBCursor find() {
-		return null;
+		return new DBCursor(this, null, null);
 	}
 	
 	/**
@@ -175,11 +175,13 @@ public class DBCollection {
 	 * Use the parse function from the document class to create the document object
 	 * @throws FileNotFoundException
 	 */
-	public JsonObject getDocument(int i) {
+	public JsonObject getDocument(long i) {
 		try {
 			Scanner sc = new Scanner(this.jsonFile);
 			sc.useDelimiter("(?m)^\t*$");
+			System.out.println(i);
 			for(int j = 0; j < i; j++) {
+				System.out.println(j);
 				sc.next();
 			}
 			String doc = sc.next();
