@@ -101,6 +101,7 @@ class CollectionTester {
 		double newVal = Math.random();
 		update.add("newkey", new JsonPrimitive(newVal));
 		test.update(query, update, false);
+		System.out.println(primitive.toString());
 		assertTrue(primitive.getAsJsonPrimitive("newkey").getAsFloat() == newVal);
 	}
 

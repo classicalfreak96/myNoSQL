@@ -1,8 +1,10 @@
 package hw5;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -119,7 +121,8 @@ public class DBCollection {
 			    if(doc.get(entry.getKey()) != null) {
 			    	System.out.println(i);
 			    	// then write to the file
-			    	doc = update;
+			    	// cannot remove and reinsert (otherwise doc gets new id)
+			    	this.replaceDocument(doc, update);
 			    	updatedOne = true;
 			    	break;
 			    }
@@ -206,6 +209,40 @@ public class DBCollection {
 			e.printStackTrace();
 		}
 	
+	}
+	
+	// helper method for update
+	// replaces doc w/ update
+	private void replaceDocument(JsonObject doc, JsonObject update) {
+		try {
+			String oldCollection = "";
+			// get all lines in collection
+			BufferedReader reader = new BufferedReader(new FileReader(this.jsonFile));
+			String line = reader.readLine();
+			while (line != null)  {
+				oldCollection  += line + "\n";
+                line = reader.readLine();
+            }
+			System.out.println("DOC: " + doc.toString());
+			System.out.println("UPDATE: " + update.toString());
+			System.out.println("OLD");
+			System.out.println(oldCollection);
+			System.out.println("NEW");
+			String newCollection = oldCollection.replace(doc.toString(), update.toString());
+			System.out.println(newCollection);
+			// replace selected doc w/ update
+			FileOutputStream outputStream = new FileOutputStream(this.jsonFile, false);
+			byte[] docStringToBytes = newCollection.getBytes();
+			outputStream.write(docStringToBytes);
+			outputStream.close();
+			reader.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }
