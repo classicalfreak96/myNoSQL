@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.FileNotFoundException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -16,6 +17,11 @@ import hw5.DBCollection;
 import hw5.DBCursor;
 
 class CollectionTester {
+	
+//	@BeforeEach
+//	public void beforeTests() {
+//		
+//	}
 
 	/*
 	 * Things to be tested:
@@ -81,6 +87,21 @@ class CollectionTester {
 		// alternatively, we could use test.drop at the end instead of type casting here
 		JsonObject primitive = test.getDocument(toIntExact(test.count()-1));
 		assertTrue(primitive.getAsJsonPrimitive("key").getAsString().equals("value"));
+	}
+	
+	@Test
+	public void testUpdate() {
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test");
+		
+		JsonObject primitive = test.getDocument(0);
+		JsonObject query = new JsonObject();
+		JsonObject update = new JsonObject();
+		query.add("key", new JsonPrimitive("value"));
+		double newVal = Math.random();
+		update.add("newkey", new JsonPrimitive(newVal));
+		test.update(query, update, false);
+		assertTrue(primitive.getAsJsonPrimitive("newkey").getAsFloat() == newVal);
 	}
 
 }

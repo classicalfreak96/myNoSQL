@@ -5,9 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -106,7 +110,24 @@ public class DBCollection {
 	 * 				false if only the first matching document should be updated
 	 */
 	public void update(JsonObject query, JsonObject update, boolean multi) {
-		
+		boolean updatedOne = false;
+		for(int i = 0; i < this.count(); i++) {
+			JsonObject doc = this.getDocument(i);
+			Set<Entry<String, JsonElement>> entrySet = doc.entrySet();
+			for (Map.Entry<String, JsonElement> entry: entrySet) {
+//			    System.out.println(entry.getKey());
+			    if(doc.get(entry.getKey()) != null) {
+			    	System.out.println(i);
+			    	// then write to the file
+			    	doc = update;
+			    	updatedOne = true;
+			    	break;
+			    }
+			}
+			if(updatedOne && !multi) {
+				break;
+			}
+		}
 	}
 	
 	/**
