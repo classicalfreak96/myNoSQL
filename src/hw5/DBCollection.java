@@ -2,12 +2,14 @@ package hw5;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class DBCollection {
 	
@@ -72,7 +74,27 @@ public class DBCollection {
 	 * @param documents
 	 */
 	public void insert(JsonObject... documents) {
-		
+		for(JsonObject doc : documents) {
+			doc.add("mongoid", new JsonPrimitive(this.count()+1));
+			String docString = "";
+			if(this.count() != 0) {
+				docString = "\t\n";
+			}
+			docString += doc.toString() + "\n";
+			try {
+				// last parameter is append: set to true so it writes to end of file instead of beginning
+				FileOutputStream outputStream = new FileOutputStream(this.jsonFile, true);
+				byte[] docStringToBytes = docString.getBytes();
+				outputStream.write(docStringToBytes);
+				outputStream.close();	
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -102,33 +124,67 @@ public class DBCollection {
 	 * Returns the number of documents in this collection
 	 */
 	public long count() {
+		try {
+			Scanner sc = new Scanner(this.jsonFile);
+			sc.useDelimiter("(?m)^\t*$");
+			long count = 0;
+			while(sc.hasNext()) {
+				count++;
+				sc.next();
+			}
+			sc.close();
+			return count;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return 0;
 	}
 	
 	public String getName() {
-		return null;
+		return this.name;
 	}
 	
 	/**
 	 * Returns the ith document in the collection.
 	 * Documents are separated by a line that contains only a single tab (\t)
 	 * Use the parse function from the document class to create the document object
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException
 	 */
-	public JsonObject getDocument(int i) throws FileNotFoundException {
-		Scanner sc = new Scanner(this.jsonFile);
-		sc.useDelimiter(Pattern.compile("(?m)^\t*$"));
-		for(int j = 0; j < i; j++) {
-			sc.next();
+	public JsonObject getDocument(int i) {
+		try {
+			Scanner sc = new Scanner(this.jsonFile);
+			sc.useDelimiter("(?m)^\t*$");
+			for(int j = 0; j < i; j++) {
+				sc.next();
+			}
+			String doc = sc.next();
+			sc.close();
+			return Document.parse(doc);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return Document.parse(sc.next());
+		return null;
 	}
 	
 	/**
 	 * Drops this collection, removing all of the documents it contains from the DB
 	 */
 	public void drop() {
-		
+		try {
+			FileOutputStream outputStream = new FileOutputStream(this.jsonFile);
+			byte[] docStringToBytes = "".getBytes();
+			outputStream.write(docStringToBytes);
+			outputStream.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 	}
 	
 }
