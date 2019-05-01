@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -119,10 +121,9 @@ public class DBCollection {
 			for (Map.Entry<String, JsonElement> entry: entrySet) {
 //			    System.out.println(entry.getKey());
 			    if(doc.get(entry.getKey()) != null) {
-			    	System.out.println(i);
 			    	// then write to the file
 			    	// cannot remove and reinsert (otherwise doc gets new id)
-			    	this.replaceDocument(doc, update);
+			    	this.replaceDocument(i, doc, update);
 			    	updatedOne = true;
 			    	break;
 			    }
@@ -179,9 +180,7 @@ public class DBCollection {
 		try {
 			Scanner sc = new Scanner(this.jsonFile);
 			sc.useDelimiter("(?m)^\t*$");
-			System.out.println(i);
 			for(int j = 0; j < i; j++) {
-				System.out.println(j);
 				sc.next();
 			}
 			String doc = sc.next();
@@ -215,23 +214,42 @@ public class DBCollection {
 	
 	// helper method for update
 	// replaces doc w/ update
-	private void replaceDocument(JsonObject doc, JsonObject update) {
+	private void replaceDocument(int i , JsonObject doc, JsonObject update) {
 		try {
+			int lineNum = 0;
+			int tabCount = 0;
 			String oldCollection = "";
 			// get all lines in collection
 			BufferedReader reader = new BufferedReader(new FileReader(this.jsonFile));
 			String line = reader.readLine();
 			while (line != null)  {
+				if(i != tabCount) {
+					lineNum++;
+				}
+				if(i != tabCount && line.equals("\t")) {
+					tabCount++;
+				}
 				oldCollection  += line + "\n";
                 line = reader.readLine();
             }
 			System.out.println("DOC: " + doc.toString());
 			System.out.println("UPDATE: " + update.toString());
-			System.out.println("OLD");
-			System.out.println(oldCollection);
-			System.out.println("NEW");
+			
 			String newCollection = oldCollection.replace(doc.toString(), update.toString());
+			String[] lines = newCollection.split("\\r?\\n");
+			
+			int index = lineNum;
+			System.out.println(lines.length + " " + index);
+			while(index < lines.length && !lines[index].equals("\t")) {
+				lines[index] = "";
+				index++;
+			}
+			lines[lineNum] = update.toString();
+			List<String> linesList = new ArrayList<String>(Arrays.asList(lines));
+			linesList.removeIf(l -> l.equals(""));
+			newCollection = String.join("\n", linesList);
 			System.out.println(newCollection);
+			
 			// replace selected doc w/ update
 			FileOutputStream outputStream = new FileOutputStream(this.jsonFile, false);
 			byte[] docStringToBytes = newCollection.getBytes();

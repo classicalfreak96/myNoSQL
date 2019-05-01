@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.FileNotFoundException;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -18,10 +18,16 @@ import hw5.DBCursor;
 
 class CollectionTester {
 	
-//	@BeforeEach
-//	public void beforeTests() {
-//		
-//	}
+	@AfterAll
+	public static void afterTests() {
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test3");
+		test.drop();
+		
+		JsonObject json = new JsonObject();
+		json.add("key", new JsonPrimitive("value"));
+		test.insert(json);
+	}
 
 	/*
 	 * Things to be tested:
@@ -92,15 +98,17 @@ class CollectionTester {
 	@Test
 	public void testUpdate() {
 		DB db = new DB("data");
-		DBCollection test = db.getCollection("test");
+		DBCollection test = db.getCollection("test3");
 		
-		JsonObject primitive = test.getDocument(0);
 		JsonObject query = new JsonObject();
 		JsonObject update = new JsonObject();
 		query.add("key", new JsonPrimitive("value"));
-		double newVal = Math.random();
+		int newVal = (int)(Math.random() * 10 + 1);
 		update.add("newkey", new JsonPrimitive(newVal));
+		
 		test.update(query, update, false);
+		
+		JsonObject primitive = test.getDocument(0);
 		System.out.println(primitive.toString());
 		assertTrue(primitive.getAsJsonPrimitive("newkey").getAsFloat() == newVal);
 	}
