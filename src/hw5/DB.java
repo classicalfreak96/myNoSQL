@@ -5,8 +5,8 @@ import java.io.IOException;
 
 public class DB {
 	
-	private String name;
-	private File dir;
+	public String name;
+	public File dir;
 
 	/**
 	 * Creates a database object with the given name.

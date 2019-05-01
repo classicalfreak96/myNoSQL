@@ -1,8 +1,11 @@
 package hw5;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import com.google.gson.JsonObject;
 
@@ -20,7 +23,7 @@ public class DBCollection {
 	public DBCollection(DB database, String name) {
 		this.database = database;
 		this.name = name;
-		this.jsonFile = new File(name+".json");
+		this.jsonFile = new File(database.dir.getPath(), name+".json");
 		if(!this.jsonFile.exists()) {
 			// if the collection does not exist, create a new json for it
 			try {
@@ -110,9 +113,15 @@ public class DBCollection {
 	 * Returns the ith document in the collection.
 	 * Documents are separated by a line that contains only a single tab (\t)
 	 * Use the parse function from the document class to create the document object
+	 * @throws FileNotFoundException 
 	 */
-	public JsonObject getDocument(int i) {
-		return null;
+	public JsonObject getDocument(int i) throws FileNotFoundException {
+		Scanner sc = new Scanner(this.jsonFile);
+		sc.useDelimiter(Pattern.compile("(?m)^\t*$"));
+		for(int j = 0; j < i; j++) {
+			sc.next();
+		}
+		return Document.parse(sc.next());
 	}
 	
 	/**
