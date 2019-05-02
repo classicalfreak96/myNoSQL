@@ -144,6 +144,7 @@ public class DBCollection {
 	 * 				false if only the first matching document should be updated
 	 */
 	public void remove(JsonObject query, boolean multi) {
+		// TODO: multi is messing up format (extra tab appended to beginning)
 		boolean updatedOne = false;
 		ArrayList<JsonIndexPair> jsonsToRemove = new ArrayList<JsonIndexPair>(); 
 		// removing is messing with the for loop, exits early
