@@ -38,8 +38,8 @@ class CollectionTester {
 		test.insert(json, json);
 		
 		// used for testRemoveMulti
-//		test = db.getCollection("test6");
-//		test.insert(json, json);
+		test = db.getCollection("test6");
+		test.insert(json, json);
 	}
 
 	/*
@@ -122,7 +122,6 @@ class CollectionTester {
 		test.update(query, update, false);
 		
 		JsonObject primitive = test.getDocument(0);
-		System.out.println(primitive.toString());
 		assertTrue(primitive.getAsJsonPrimitive("newkey").getAsFloat() == newVal);
 	}
 	

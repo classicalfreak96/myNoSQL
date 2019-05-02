@@ -117,6 +117,7 @@ public class DBCollection {
 	 */
 	public void update(JsonObject query, JsonObject update, boolean multi) {
 		boolean updatedOne = false;
+		// TODO: keep mongoid when doc gets updated
 		for(int i = 0; i < this.count(); i++) {
 			JsonObject doc = this.getDocument(i);
 			Set<Entry<String, JsonElement>> entrySet = doc.entrySet();
@@ -144,27 +145,29 @@ public class DBCollection {
 	 */
 	public void remove(JsonObject query, boolean multi) {
 		boolean updatedOne = false;
-		System.out.println(this.count());
+		ArrayList<JsonIndexPair> jsonsToRemove = new ArrayList<JsonIndexPair>(); 
 		// removing is messing with the for loop, exits early
 		for(int i = 0; i < this.count(); i++) {
 			JsonObject doc = this.getDocument(i);
-			System.out.println(doc.toString() + " " + this.count());
 			Set<Entry<String, JsonElement>> entrySet = doc.entrySet();
 			for (Map.Entry<String, JsonElement> entry: entrySet) {
 			    if(doc.get(entry.getKey()) != null) {
-			    	System.out.println(i);
 			    	// then write to the file
 			    	// cannot remove and reinsert (otherwise doc gets new id)
-			    	this.replaceDocument(i, doc, "");
+			    	jsonsToRemove.add(new JsonIndexPair(doc, i));
 			    	updatedOne = true;
 			    	break;
 			    }
 			}
 			if(updatedOne && !multi) {
-				System.out.println("yoyoyoyo");
 				break;
 			}
 		}
+		
+		for(JsonIndexPair jsoni : jsonsToRemove) {
+			this.replaceDocument(jsoni.i, jsoni.json, "");
+		}
+		
 	}
 	
 	/**
@@ -293,4 +296,24 @@ public class DBCollection {
 			e.printStackTrace();
 		}
 	}
+	
+	// Private inner class
+    // a table's metadata
+    private class JsonIndexPair {
+    		public JsonObject json;
+    		public int i;
+    		
+    		public JsonIndexPair(JsonObject json, int i) {
+    			this.json = json;
+    			this.i = i;
+    		}
+//    		
+//    		public JsonObject getJsonObject() {
+//    			return this.json;
+//    		}
+//    		
+//    		public int getIndex() {
+//    			return this.i;
+//    		}
+    }
 }
