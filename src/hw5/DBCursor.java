@@ -70,9 +70,15 @@ public class DBCursor implements Iterator<JsonObject>{
 			
 			//handle projection
 			if (fields.size() > 0 && toAdd.size() > 0 && add) {
-				for (String key : keys) {
-					toAdd.remove(key);
+				System.out.println("filtering out stuff");
+				
+				ArrayList<String> toRemove = new ArrayList<String>();
+				for (String key : toAdd.keySet()) toRemove.add(key);
+				for (String key : fields.keySet()) {
+					if (fields.get(key).getAsInt() == 1) toRemove.remove(key); //remove everything you want to keep
 				}
+				
+				for (String key : toRemove) toAdd.remove(key);
 			}
 			
 			//add toAdd to results 

@@ -168,4 +168,45 @@ class CursorTester {
 		JsonObject d3 = results.next();
 		assertTrue(!results.hasNext());
 	}
+	
+	@Test
+	public void testProject() throws Exception {
+		System.out.println("TEST PROJECT--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test2");
+		JsonObject query = Document.parse("{value : {$lt : 4}}");
+		JsonObject fields = Document.parse("{value : 1}");
+		DBCursor results = test.find(query, fields);
+		assertTrue(results.count() == 3, "count was : " + results.count() + ", expected 3");
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(d1.toString().compareTo("{\"value\":1}") == 0);
+		assertTrue(results.hasNext());
+		JsonObject d2 = results.next();
+		assertTrue(d2.toString().compareTo("{\"value\":2}") == 0);
+		assertTrue(results.hasNext());
+		JsonObject d3 = results.next();
+		assertTrue(d3.toString().compareTo("{\"value\":3}") == 0);
+		assertTrue(!results.hasNext());
+	}
+	
+	public void testProjectII() throws Exception {
+		System.out.println("TEST PROJECT II--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test2");
+		JsonObject query = Document.parse("{value : {$gte : 3}}");
+		JsonObject fields = Document.parse("{value : 0, other : 1}");
+		DBCursor results = test.find(query, fields);
+		assertTrue(results.count() == 3, "count was : " + results.count() + ", expected 3");
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(d1.toString().compareTo("{\"other\":\"test\"}") == 0);
+		assertTrue(results.hasNext());
+		JsonObject d2 = results.next();
+		assertTrue(d2.toString().compareTo("{\"other\":\"test\"}") == 0);
+		assertTrue(results.hasNext());
+		JsonObject d3 = results.next();
+		assertTrue(d3.toString().compareTo("{\"other\":\"test\"}") == 0);
+		assertTrue(!results.hasNext());
+	}
 }

@@ -1,19 +1,19 @@
 { 
-	"value" : 1
+	"value" : 1, "other" : "test"
 }
 
 { 
-	"value" : 2
+	"value" : 2, "other" : "test"
 }
 
 { 
-	"value" : 3
+	"value" : 3, "other" : "test"
 }
 
 { 
-	"value" : 4
+	"value" : 4, "other" : "test"
 }
 
 { 
-	"value" : 5
+	"value" : 5, "other" : "test"
 }
