@@ -19,22 +19,35 @@ public class DBCursor implements Iterator<JsonObject>{
 	
 	public DBCursor(DBCollection collection, JsonObject query, JsonObject fields) throws Exception {
 		
-		//find all
-//		this.result = collection;
-		
-//		JsonObject toReturn = new JsonObject();
-		for (long i = 0; i < collection.count(); i++) {
-			result.add(collection.getDocument(i));
-		}
-		
-		//handle the query
-		if (query != null) {
-
-			
-		}
-		//handle the projection 
+		//set up query and projection fields
+		ArrayList<String> keys = new ArrayList<>();
 		if (fields != null) {
+			keys = new ArrayList<>(collection.getDocument(0).keySet()); //arraylist of keys that are to be removed from final result
+			for (String key : fields.keySet()) {		//remove keys that are not supposed to be removed 
+				if (fields.get(key).getAsInt() == 1) {
+					keys.remove(key);
+				}
+			}
+		}
+		
+		for (long i = 0; i < collection.count(); i++) {
+			JsonObject toAdd = collection.getDocument(i);
 			
+			//handle query
+			if (query != null) {
+				
+				
+			}
+			
+			//handle projection
+			if (fields != null) {
+				for (String key : keys) {
+					toAdd.remove(key);
+				}
+			}
+			
+			//add toAdd to results 
+			result.add(toAdd);
 		}
 		this.count = this.result.size();
 	}
@@ -52,7 +65,6 @@ public class DBCursor implements Iterator<JsonObject>{
 	public JsonObject next() {
 		if (this.hasNext()) {
 			this.current ++;
-//			return this.result.getDocument(this.current - 1);
 			return this.result.get(this.current - 1);
 		}
 		else return null;
