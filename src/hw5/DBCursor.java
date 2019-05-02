@@ -33,7 +33,7 @@ public class DBCursor implements Iterator<JsonObject>{
 			JsonObject toAdd = collection.getDocument(i);
 			ArrayList<String> toAddKeys = new ArrayList<>(toAdd.keySet());
 			
-			//handle query not embedded
+			//iterate through each key in the query, test against values in document
 			for (int j = 0; j < keys.size(); j++) {
 				String key = keys.get(j);
 				//for embedded documents
@@ -63,6 +63,19 @@ public class DBCursor implements Iterator<JsonObject>{
 				else if (toAddKeys.contains(key)) {
 					System.out.println("HERE2!");
 //					System.out.println("here asdfasdfasdfasdf");
+					//if it's an array
+					if (query.get(key).isJsonArray()) {
+						ArrayList<String> toAddArray = new ArrayList<>();
+						ArrayList<String> queryArray = new ArrayList<>();
+						for (JsonElement element : toAdd.get(key).getAsJsonArray()) toAddArray.add(element.toString());
+						for (JsonElement element : query.get(key).getAsJsonArray()) queryArray.add(element.toString());
+						if (toAddArray.size() == queryArray.size()) {
+							for (String element : toAddArray) {
+								if (!queryArray.contains(element)) add = false;
+							}
+						}
+						else add = false;
+					}
 					if (toAdd.get(key).toString().compareTo(query.get(key).toString()) != 0) add = false;
 				}
 				else {
@@ -113,16 +126,6 @@ public class DBCursor implements Iterator<JsonObject>{
 	 */
 	public long count() {
 		return this.result.size();
-	}
-	
-	private class document {
-		public JsonObject jsonObject;
-		public Boolean add; 
-		
-		public document(JsonObject jsonObject, Boolean add) {
-			this.jsonObject = jsonObject;
-			this.add = add;
-		}
 	}
 
 }

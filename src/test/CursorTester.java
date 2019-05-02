@@ -25,6 +25,7 @@ class CursorTester {
 
 	@Test
 	public void testFindAll() throws Exception {
+		System.out.println("TESTING FIND ALL");
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		DBCursor results = test.find();
@@ -57,7 +58,6 @@ class CursorTester {
 	
 	@Test
 	public void testEmbeddedQuery() throws Exception {
-		System.out.println("--------------------");
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		JsonObject query = Document.parse("{embedded.key2 : value2}");
@@ -66,5 +66,29 @@ class CursorTester {
 		assertTrue(results.hasNext());
 		JsonObject d1 = results.next();
 		assertTrue(!results.hasNext());
+	}
+	
+	@Test
+	public void testArrayQuery() throws Exception {
+		System.out.println("--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test");
+		JsonObject query = Document.parse("{array : [one, two, three]}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 1, "count was : " + results.count());
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(!results.hasNext());
+	}
+	
+	@Test
+	public void testArrayQueryFail() throws Exception {
+		System.out.println("--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test");
+		JsonObject query = Document.parse("{array : [one, two]}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 0, "count was : " + results.count());
+		assertFalse(results.hasNext());
 	}
 }
