@@ -21,13 +21,8 @@ public class DBCursor implements Iterator<JsonObject>{
 		
 		//set up query and projection fields
 		ArrayList<String> keys = new ArrayList<>();
-		if (fields != null) {
-			keys = new ArrayList<>(collection.getDocument(0).keySet()); //arraylist of keys that are to be removed from final result
-			for (String key : fields.keySet()) {		//remove keys that are not supposed to be removed 
-				if (fields.get(key).getAsInt() == 1) {
-					keys.remove(key);
-				}
-			}
+		if (!fields.isJsonNull()) {
+
 		}
 		
 		for (long i = 0; i < collection.count(); i++) {
@@ -40,7 +35,7 @@ public class DBCursor implements Iterator<JsonObject>{
 			}
 			
 			//handle projection
-			if (fields != null) {
+			if (fields != null && !toAdd.isJsonNull()) {
 				for (String key : keys) {
 					toAdd.remove(key);
 				}
@@ -76,6 +71,16 @@ public class DBCursor implements Iterator<JsonObject>{
 	 */
 	public long count() {
 		return this.result.size();
+	}
+	
+	private class document {
+		public JsonObject jsonObject;
+		public Boolean add; 
+		
+		public document(JsonObject jsonObject, Boolean add) {
+			this.jsonObject = jsonObject;
+			this.add = add;
+		}
 	}
 
 }

@@ -51,7 +51,9 @@ public class DBCollection {
 	 * @throws Exception 
 	 */
 	public DBCursor find() throws Exception {
-		return new DBCursor(this, null, null);
+		JsonObject query = Document.parse("{}");
+		JsonObject fields = Document.parse("{}");
+		return new DBCursor(this, query, fields);
 	}
 	
 	/**
@@ -62,7 +64,8 @@ public class DBCollection {
 	 * @throws Exception 
 	 */
 	public DBCursor find(JsonObject query) throws Exception {
-		return new DBCursor(this, query, null);
+		JsonObject fields = Document.parse("{}");
+		return new DBCursor(this, query, fields);
 	}
 	
 	/**
@@ -71,9 +74,10 @@ public class DBCollection {
 	 * @param query relational select
 	 * @param projection relational project
 	 * @return
+	 * @throws Exception 
 	 */
-	public DBCursor find(JsonObject query, JsonObject projection) {
-		return null;
+	public DBCursor find(JsonObject query, JsonObject projection) throws Exception {
+		return new DBCursor(this, query, projection);
 	}
 	
 	/**

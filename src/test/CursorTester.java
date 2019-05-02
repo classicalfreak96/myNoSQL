@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonObject;
@@ -9,6 +10,7 @@ import com.google.gson.JsonObject;
 import hw5.DB;
 import hw5.DBCollection;
 import hw5.DBCursor;
+import hw5.Document;
 
 class CursorTester {
 
@@ -34,6 +36,20 @@ class CursorTester {
 		assertTrue(results.hasNext());
 		JsonObject d3 = results.next();//verify contents?
 		assertTrue(!results.hasNext());
+		
+		for (int i = 0; i < test.count(); i++) {
+			JsonObject document = test.getDocument(i);
+			System.out.println(Document.toJsonString(document));
+		}
 	}
-
+	
+//	@Test
+//	public void testQuery() throws Exception {
+//		DB db = new DB("data");
+//		DBCollection test = db.getCollection("test");
+//		JsonObject query = Document.parse("{key: value}");
+//		DBCursor results = test.find(query);
+//		assertTrue(results.count() == 1);
+//		assertFalse(results.hasNext());
+//	}
 }
