@@ -121,7 +121,6 @@ public class DBCollection {
 	 */
 	public void update(JsonObject query, JsonObject update, boolean multi) {
 		boolean updatedOne = false;
-		// TODO: keep mongoid when doc gets updated
 		for(int i = 0; i < this.count(); i++) {
 			JsonObject doc = this.getDocument(i);
 			Set<Entry<String, JsonElement>> entrySet = doc.entrySet();
@@ -129,6 +128,11 @@ public class DBCollection {
 			    if(doc.get(entry.getKey()) != null) {
 			    	// then write to the file
 			    	// cannot remove and reinsert (otherwise doc gets new id)
+			    	if(doc.getAsJsonPrimitive("mongoid") != null) {
+			    		// when updating the mongoid should be the same
+			    		int mongoId = doc.getAsJsonPrimitive("mongoid").getAsInt();
+			    		update.add("mongoid", new JsonPrimitive(mongoId));
+			    	}
 			    	this.replaceDocument(i, doc, update.toString());
 			    	updatedOne = true;
 			    	break;
@@ -247,7 +251,6 @@ public class DBCollection {
 	// i is the document's index
 	// if removing document pass: (i, doc, "")
 	private void replaceDocument(int i , JsonObject doc, String update) {
-		// TODO: keep id on update
 		try {
 			int lineNum = 0;
 			int tabCount = 0;
@@ -268,9 +271,12 @@ public class DBCollection {
 			
 			String newCollection = oldCollection;
 			String[] lines = newCollection.split("\\r?\\n");
-			
-//			int index = update.equals("") ? lineNum-1 : lineNum;
 			int index = lineNum;
+			if(lineNum-1 >= 0 && update.equals("")) {
+				index = lineNum-1;
+			}
+//			int index = update.equals("") ? lineNum-1 : lineNum;
+//			int index = lineNum;
 			while(index < lines.length && !lines[index].equals("\t")) {
 				lines[index] = "";
 				index++;

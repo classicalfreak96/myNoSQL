@@ -30,6 +30,7 @@ class CollectionTester {
 		
 		// used for testUpdate and testRemove
 		test = db.getCollection("test4");
+		test.drop();
 		test.insert(json);
 		
 		// used for testUpdateMulti
@@ -39,6 +40,7 @@ class CollectionTester {
 		
 		// used for testRemoveMulti
 		test = db.getCollection("test6");
+		test.drop();
 		test.insert(json, json);
 	}
 
