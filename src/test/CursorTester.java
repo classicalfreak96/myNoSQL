@@ -28,7 +28,7 @@ class CursorTester {
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		DBCursor results = test.find();
-		assertTrue(results.count() == 3);
+		assertTrue(results.count() == 3, "Count was " + results.count());
 		assertTrue(results.hasNext());
 		JsonObject d1 = results.next(); //verify contents?
 		assertTrue(results.hasNext());
@@ -43,13 +43,28 @@ class CursorTester {
 		}
 	}
 	
-//	@Test
-//	public void testQuery() throws Exception {
-//		DB db = new DB("data");
-//		DBCollection test = db.getCollection("test");
-//		JsonObject query = Document.parse("{key: value}");
-//		DBCursor results = test.find(query);
-//		assertTrue(results.count() == 1);
-//		assertFalse(results.hasNext());
-//	}
+	@Test
+	public void testQuery() throws Exception {
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test");
+		JsonObject query = Document.parse("{key: value}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 1, "count was : " + results.count());
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(!results.hasNext());
+	}
+	
+	@Test
+	public void testEmbeddedQuery() throws Exception {
+		System.out.println("--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test");
+		JsonObject query = Document.parse("{embedded.key2 : value2}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 1, "count was : " + results.count());
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(!results.hasNext());
+	}
 }

@@ -20,30 +20,72 @@ public class DBCursor implements Iterator<JsonObject>{
 	public DBCursor(DBCollection collection, JsonObject query, JsonObject fields) throws Exception {
 		
 		//set up query and projection fields
-		ArrayList<String> keys = new ArrayList<>();
-		if (!fields.isJsonNull()) {
-
-		}
+//		ArrayList<String> keys = new ArrayList<>();
+//		if (!fields.isJsonNull()) {
+//			for (long i = 0; i < collection.count(); i++) {
+//				keys.add(collection.getDocument(i))
+//			}
+//		}
 		
+		ArrayList<String> keys = new ArrayList<>(query.keySet());
 		for (long i = 0; i < collection.count(); i++) {
+			Boolean add = true;
 			JsonObject toAdd = collection.getDocument(i);
+			ArrayList<String> toAddKeys = new ArrayList<>(toAdd.keySet());
 			
-			//handle query
-			if (query != null) {
+			//handle query not embedded
+			for (int j = 0; j < keys.size(); j++) {
+				String key = keys.get(j);
+				//for embedded documents
+				if (key.contains(".")) {
+					System.out.println("HERE!");
+					System.out.println(key);
+					String[] embedded = key.split("\\.");
+					if (! toAddKeys.contains(embedded[0])) {
+						System.out.println("continuing");
+						if (j == keys.size() - 1) add = false;
+						continue;
+						}
+//					for (String embed : embedded) {
+//						System.out.println(embed);
+//					}
+					JsonObject toTraverse = toAdd.deepCopy();
+					for (int k = 0; k < embedded.length - 1; k++) {
+						String toAccess = embedded[k];
+						toTraverse = (JsonObject) toTraverse.get(toAccess);
+					}
+//					System.out.println("toTraverse to string: " + toTraverse.toString());
+//					System.out.println("embedded length: " + embedded.length);
+					if (toTraverse.get(embedded[embedded.length - 1]).toString().compareTo(query.get(key).toString()) != 0) add = false;
+				}
 				
-				
+				//for un-embedded documents
+				else if (toAddKeys.contains(key)) {
+					System.out.println("HERE2!");
+//					System.out.println("here asdfasdfasdfasdf");
+					if (toAdd.get(key).toString().compareTo(query.get(key).toString()) != 0) add = false;
+				}
+				else {
+					System.out.println("HERE3!");
+
+					add = false;
+				}
 			}
 			
 			//handle projection
-			if (fields != null && !toAdd.isJsonNull()) {
+			if (fields.size() > 0 && toAdd.size() > 0 && add) {
 				for (String key : keys) {
 					toAdd.remove(key);
 				}
 			}
 			
 			//add toAdd to results 
-			result.add(toAdd);
+			if (add) {
+				System.out.println("adding: " + toAdd.toString());
+				result.add(toAdd);
+				}
 		}
+		System.out.println("Size is: " + this.result.size());
 		this.count = this.result.size();
 	}
 	
@@ -51,7 +93,7 @@ public class DBCursor implements Iterator<JsonObject>{
 	 * Returns true if there are more documents to be seen
 	 */
 	public boolean hasNext() {
-		return current == count ? false : true;
+		return current >= count ? false : true;
 	}
 
 	/**
