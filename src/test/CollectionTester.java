@@ -92,6 +92,7 @@ class CollectionTester {
 		JsonObject json = new JsonObject();
 		json.add("key", new JsonPrimitive("value"));
 		test.insert(json);
+		// > 0 because the number of documents in this test file doesn't matter
 		assertTrue(test.count() > 0);
 		test.drop();
 		assertTrue(test.count() == 0);

@@ -272,6 +272,7 @@ public class DBCollection {
 			String newCollection = oldCollection;
 			String[] lines = newCollection.split("\\r?\\n");
 			int index = lineNum;
+			// delete tabs if removing document 
 			if(lineNum-1 >= 0 && update.equals("")) {
 				index = lineNum-1;
 			}
