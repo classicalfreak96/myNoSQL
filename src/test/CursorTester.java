@@ -84,6 +84,19 @@ class CursorTester {
 	}
 	
 	@Test
+	public void testQueryII() throws Exception {
+		System.out.println("TEST QUERY II--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test2");
+		JsonObject query = Document.parse("{value : 1}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 1, "count was : " + results.count());
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(!results.hasNext());
+	}
+	
+	@Test
 	public void testArrayQueryFail() throws Exception {
 		System.out.println("TEST ARRAY QUERY FAIL--------------------");
 		DB db = new DB("data");
@@ -92,5 +105,67 @@ class CursorTester {
 		DBCursor results = test.find(query);
 		assertTrue(results.count() == 0, "count was : " + results.count());
 		assertFalse(results.hasNext());
+	}
+	
+	@Test
+	public void testEqComparator() throws Exception {
+		System.out.println("TEST EQUAL COMPARATOR--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test2");
+		JsonObject query = Document.parse("{value : {$eq : 2}}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 1, "count was : " + results.count() + ", expected 1");
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(!results.hasNext());
+	}
+	
+	@Test
+	public void testGtComparator() throws Exception {
+		System.out.println("TEST GREATER THAN COMPARATOR--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test2");
+		JsonObject query = Document.parse("{value : {$gt : 2}}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 3, "count was : " + results.count() + ", expected 3");
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(results.hasNext());
+		JsonObject d2 = results.next();
+		assertTrue(results.hasNext());
+		JsonObject d3 = results.next();
+		assertTrue(!results.hasNext());
+	}
+	
+	@Test
+	public void testLteComparator() throws Exception {
+		System.out.println("TEST LESS THAN EQUALS COMPARATOR--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test2");
+		JsonObject query = Document.parse("{value : {$lte : 2}}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 2, "count was : " + results.count() + ", expected 2");
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(results.hasNext());
+		JsonObject d2 = results.next();
+		assertTrue(!results.hasNext());
+	}
+	
+	@Test
+	public void testInComparator() throws Exception {
+		System.out.println("TEST IN COMPARATOR--------------------");
+		DB db = new DB("data");
+		DBCollection test = db.getCollection("test2");
+		JsonObject query = Document.parse("{value : {$in : [2,3,4]}}");
+		DBCursor results = test.find(query);
+		assertTrue(results.count() == 3, "count was : " + results.count() + ", expected 3");
+		assertTrue(results.hasNext());
+		JsonObject d1 = results.next();
+		assertTrue(results.hasNext());
+		JsonObject d2 = results.next();
+		assertTrue(results.hasNext());
+		JsonObject d3 = results.next();
+		assertTrue(!results.hasNext());
 	}
 }

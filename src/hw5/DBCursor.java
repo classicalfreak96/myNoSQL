@@ -44,6 +44,8 @@ public class DBCursor implements Iterator<JsonObject>{
 					}
 					//if embedded document is an array 
 					if (query.get(key).isJsonArray()) add = this.compareArray(key, query, toAdd);
+					//if comparator
+					if (query.get(key).isJsonObject()) add = this.comparator(key, query, toAdd);
 					else if (toTraverse.get(embedded[embedded.length - 1]).toString().compareTo(query.get(key).toString()) != 0) add = false;
 				}
 				
@@ -52,6 +54,10 @@ public class DBCursor implements Iterator<JsonObject>{
 					
 //					//if it's an array
 					if (query.get(key).isJsonArray() && toAdd.get(key).isJsonArray()) add = this.compareArray(key, query, toAdd);
+					
+					//if comparator
+					if (query.get(key).isJsonObject()) add = this.comparator(key, query, toAdd);
+					
 					
 					//if it's not an array then just compare values
 					else if (toAdd.get(key).toString().compareTo(query.get(key).toString()) != 0) add = false;
@@ -116,6 +122,58 @@ public class DBCursor implements Iterator<JsonObject>{
 			}
 		}
 		else return false;
+		return true;
+	}
+	
+	public boolean comparator(String key, JsonObject query, JsonObject toAdd) {
+		JsonObject toCompare = (JsonObject) query.get(key);
+		ArrayList<String> compareKeys = new ArrayList<>(toCompare.keySet());
+		for (String operator : compareKeys) {
+			if (operator.compareTo("$eq") == 0) {
+				if (toAdd.get(key).getAsInt() != toCompare.get(operator).getAsInt()) {
+					return false;
+				}
+			}
+			if (operator.compareTo("$gt") == 0) {
+				if (toCompare.get(operator).getAsInt() >= toAdd.get(key).getAsInt()) {
+					return false;
+				}
+			}
+			if (operator.compareTo("$gte") == 0) {
+				if (toCompare.get(operator).getAsInt() > toAdd.get(key).getAsInt()) {
+					return false;
+				}
+			}
+			if (operator.compareTo("$lt") == 0) {
+				if (toCompare.get(operator).getAsInt() <= toAdd.get(key).getAsInt()) {
+					return false;
+				}
+			}
+			if (operator.compareTo("$lte") == 0) {
+				if (toCompare.get(operator).getAsInt() < toAdd.get(key).getAsInt()) {
+					return false;
+				}
+			}
+			if (operator.compareTo("$ne") == 0) {
+				if (toAdd.get(key).getAsInt() == toCompare.get(operator).getAsInt()) {
+					return false;
+				}
+			}
+			if (operator.compareTo("$in") == 0) {
+				ArrayList<String> compare = new ArrayList<String>();
+				for (JsonElement element : toCompare.get(operator).getAsJsonArray()) compare.add(element.toString());
+				if (!compare.contains(toAdd.get(key).getAsString())) {
+					return false;
+				}
+			}
+			if (operator.compareTo("$nin") == 0) {
+				ArrayList<String> compare = new ArrayList<String>();
+				for (JsonElement element : toCompare.get(operator).getAsJsonArray()) compare.add(element.toString());
+				if (compare.contains(toAdd.get(key).getAsString())) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
