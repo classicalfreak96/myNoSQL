@@ -25,7 +25,7 @@ class CursorTester {
 
 	@Test
 	public void testFindAll() throws Exception {
-		System.out.println("TESTING FIND ALL");
+		System.out.println("TESTING FIND ALL------------------------");
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		DBCursor results = test.find();
@@ -46,6 +46,7 @@ class CursorTester {
 	
 	@Test
 	public void testQuery() throws Exception {
+		System.out.println("TESTING QUERY------------------------");
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		JsonObject query = Document.parse("{key: value}");
@@ -58,6 +59,7 @@ class CursorTester {
 	
 	@Test
 	public void testEmbeddedQuery() throws Exception {
+		System.out.println("TEST EMBEDDED QUERY--------------------");
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		JsonObject query = Document.parse("{embedded.key2 : value2}");
@@ -70,7 +72,7 @@ class CursorTester {
 	
 	@Test
 	public void testArrayQuery() throws Exception {
-		System.out.println("--------------------");
+		System.out.println("TEST ARRAY QUERY--------------------");
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		JsonObject query = Document.parse("{array : [one, two, three]}");
@@ -83,7 +85,7 @@ class CursorTester {
 	
 	@Test
 	public void testArrayQueryFail() throws Exception {
-		System.out.println("--------------------");
+		System.out.println("TEST ARRAY QUERY FAIL--------------------");
 		DB db = new DB("data");
 		DBCollection test = db.getCollection("test");
 		JsonObject query = Document.parse("{array : [one, two]}");
