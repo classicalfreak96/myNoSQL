@@ -37,11 +37,6 @@ class CursorTester {
 		assertTrue(results.hasNext());
 		JsonObject d3 = results.next();//verify contents?
 		assertTrue(!results.hasNext());
-		
-		for (int i = 0; i < test.count(); i++) {
-			JsonObject document = test.getDocument(i);
-			System.out.println(Document.toJsonString(document));
-		}
 	}
 	
 	@Test

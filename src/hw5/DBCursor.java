@@ -33,10 +33,9 @@ public class DBCursor implements Iterator<JsonObject>{
 				if (key.contains(".")) {
 					String[] embedded = key.split("\\.");
 					if (! toAddKeys.contains(embedded[0])) {
-						System.out.println("continuing");
 						if (j == keys.size() - 1) add = false;
 						continue;
-						}
+						}											//travel until you reach document you want to evaluate 
 					JsonObject toTraverse = toAdd.deepCopy();
 					for (int k = 0; k < embedded.length - 1; k++) {
 						String toAccess = embedded[k];
@@ -46,6 +45,7 @@ public class DBCursor implements Iterator<JsonObject>{
 					if (query.get(key).isJsonArray()) add = this.compareArray(key, query, toAdd);
 					//if comparator
 					if (query.get(key).isJsonObject()) add = this.comparator(key, query, toAdd);
+					//if normal document
 					else if (toTraverse.get(embedded[embedded.length - 1]).toString().compareTo(query.get(key).toString()) != 0) add = false;
 				}
 				
@@ -70,7 +70,6 @@ public class DBCursor implements Iterator<JsonObject>{
 			
 			//handle projection
 			if (fields.size() > 0 && toAdd.size() > 0 && add) {
-				System.out.println("filtering out stuff");
 				
 				ArrayList<String> toRemove = new ArrayList<String>();
 				for (String key : toAdd.keySet()) toRemove.add(key);
@@ -82,12 +81,9 @@ public class DBCursor implements Iterator<JsonObject>{
 			}
 			
 			//add toAdd to results 
-			if (add) {
-				System.out.println("adding: " + toAdd.toString());
-				result.add(toAdd);
-				}
+			if (add) result.add(toAdd);
+			
 		}
-		System.out.println("Size is: " + this.result.size());
 		this.count = this.result.size();
 	}
 	
@@ -123,14 +119,16 @@ public class DBCursor implements Iterator<JsonObject>{
 		for (JsonElement element : toAdd.get(key).getAsJsonArray()) toAddArray.add(element.toString());
 		for (JsonElement element : query.get(key).getAsJsonArray()) queryArray.add(element.toString());
 		if (toAddArray.size() == queryArray.size()) {
-			for (String element : toAddArray) {
-				if (!queryArray.contains(element)) return false;
+			for (int i = 0; i < toAddArray.size(); i++) {		//order matters for arrays!
+				if (queryArray.get(i).compareTo(toAddArray.get(i)) != 0) return false;
 			}
 		}
 		else return false;
 		return true;
 	}
 	
+	
+	//helper function, takes in operator string, performs operation 
 	public boolean comparator(String key, JsonObject query, JsonObject toAdd) {
 		JsonObject toCompare = (JsonObject) query.get(key);
 		ArrayList<String> compareKeys = new ArrayList<>(toCompare.keySet());
