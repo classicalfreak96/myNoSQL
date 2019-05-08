@@ -1,0 +1,7 @@
+It appears as though some of your tests were not set up properly. They were expecting certain data to be present, but that data was not in the test files.
+
+I was able to go back through the tests and recreate the test files to verify that everything worked as expected.
+
+Thanks for a great semester!
+
+Total: 100 / 100
